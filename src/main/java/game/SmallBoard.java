@@ -10,6 +10,11 @@ public class SmallBoard {
         smallBoardValue = new char[]{'f','f','f','f','f','f','f','f','f'};
     }
 
+    public char setSmallBoardValue(int x, int y, char c){
+        smallBoardValue[3 * x + y] = c;
+        return find3InLine(x, y);
+    }
+
     protected char changeFieldValue(int x, int y, boolean isX){
         actualPosition = 3 * x + y;
         smallBoardValue[actualPosition] = isX ? 'X' : 'O';
@@ -51,6 +56,9 @@ public class SmallBoard {
                 return ((smallBoardValue[0] != 'f' && smallBoardValue[0] == smallBoardValue[4] && smallBoardValue[4] == smallBoardValue[8])
                         || (smallBoardValue[2] != 'f' && smallBoardValue[2] == smallBoardValue[4] && smallBoardValue[4] == smallBoardValue[6]));
             }
+            default -> {
+                return false;
+            }
         }
 
     }
@@ -66,6 +74,9 @@ public class SmallBoard {
 
             case 6,7,8 -> {
                 return smallBoardValue[6] != 'f' && smallBoardValue[6] == smallBoardValue[7] && smallBoardValue[7] == smallBoardValue[8];
+            }
+            default -> {
+                return false;
             }
 
         }
@@ -85,7 +96,22 @@ public class SmallBoard {
             case 2,5,8 -> {
                 return smallBoardValue[2] != 'f' && smallBoardValue[2] == smallBoardValue[5] && smallBoardValue[5] == smallBoardValue[8];
             }
+
+            default -> {
+                return false;
+            }
         }
 
     }
+
+    protected boolean isPossibleMove(){
+        for (int i = 0; i < 9; i++){
+            if(smallBoardValue[i] == 'f'){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

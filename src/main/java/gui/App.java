@@ -129,9 +129,12 @@ public class App extends Application {
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
                                 game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
 
-                                changeHighlight();
-                                draw(smallBox);
-                                isX = !isX;
+                                if(!game.isAllOccupied(newHighlightedRow, newHighlightedColumn)){
+                                    changeHighlight();
+                                    draw(smallBox);
+                                    isX = !isX;
+                                }
+
                             }
 
                         });
