@@ -4,16 +4,26 @@ import game.Game;
 import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.DepthTest;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.Effect;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.util.Random;
 
 public class App extends Application {
 
@@ -29,17 +39,26 @@ public class App extends Application {
     int newHighlightedColumn = 1;
     int newHighlightedRow = 1;
 
+    Label playerX;
+    Label playerO;
+
     Game game;
 
     private void draw(Button btn){
         if(isX){
+//            Text text = new Text("X");
             btn.setText("X");
+            btn.setStyle("-fx-text-fill: #6600ff; -fx-font-size: 24px");
+            playerO.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
+            playerX.setStyle("-fx-font-size: 22px; -fx-background-color: none");
         }
         else {
             btn.setText("O");
-
+            btn.setStyle("-fx-text-fill: #04ff00; -fx-font-size: 24px");
+            playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
+            playerO.setStyle("-fx-font-size: 22px; -fx-background-color: none");
         }
-        btn.setFont(Font.font(23));
+//        btn.setFont(Font.font(23));
 
 
     }
@@ -90,9 +109,36 @@ public class App extends Application {
 
     }
 
+    public void makeDisable(int x, int y, char c){
+        GridPane gridPane = null;
+        ObservableList<Node> childrens = grid.getChildren();
+
+        for (Node node: childrens){
+            if(GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
+                gridPane = (GridPane) node;
+                break;
+            }
+        }
+
+        Text text = new Text(String.valueOf(c));
+
+        if (c == 'X') {
+            gridPane.setStyle("-fx-background-color: #af7aff");
+            //TODO: nie dziala zmiana na niebieski :(((
+//            text.setStyle("-fx-text-fill: blue");
+        } else {
+            gridPane.setStyle("-fx-background-color: #84faa2");
+            text.setStyle("-fx-text-fill: gray");
+
+        }
+        text.setStyle("-fx-font-weight: bolder");
+        text.setFont(Font.font(40));
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.add(text, 1, 1);
+    }
 
     private void createBigBoard(){
-        game = new Game();
+        game = new Game(this);
         grid = new GridPane();
 
 
@@ -101,7 +147,8 @@ public class App extends Application {
 
 
                 GridPane box = new GridPane();
-                box.setStyle("-fx-background-color: black, -fx-control-inner-background; -fx-background-insets: 0, 2; -fx-padding: 2;");
+                box.setStyle("-fx-background-color: darkgray; -fx-background-insets: 0, 2; -fx-padding: 3;");
+//                box.setStyle("-fx-background-color: black, -fx-control-inner-background; -fx-background-insets: 0, 2; -fx-padding: 2;");
 
 
                 for (int column = 0; column < 3; column++) {
@@ -120,20 +167,48 @@ public class App extends Application {
                             smallBox.setDisable(true);
                         }
                         smallBox.setStyle("-fx-pref-width: 50px; -fx-pref-height: 50px");
+
                         GridPane.setConstraints(smallBox, column, row);
                         box.getChildren().add(smallBox);
 
                         smallBox.setOnMouseClicked(event -> {
+                            Random random = new Random();
                             if(smallBox.getText() != "X" && smallBox.getText() != "O"){
                                 newHighlightedRow = GridPane.getRowIndex(smallBox);
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
-                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
 
-                                if(!game.isAllOccupied(newHighlightedRow, newHighlightedColumn)){
-                                    changeHighlight();
-                                    draw(smallBox);
-                                    isX = !isX;
+
+                                // TODO: jesli allOccupied ale to jest tez wsm przypadek gdy SB wygrane przez X lub O
+                                // np !game.won
+                                // TODO: spr czy wszystkie small nie sa occupied (bo tutaj spr w 1 konkretnym small,
+                                // a chodzi zeby wychwycic przypadek konca gry jako remis)
+                                // np. && !game.all()
+
+                                if (!game.isAllOccupied()){
+//                                    System.out.println("elo if");
+//                                    System.out.println(newHighlightedRow+ " " + newHighlightedColumn );
+//                                    System.out.println(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn));
+                                    while(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+                                        System.out.println("elo while");
+                                        newHighlightedRow = random.nextInt(2);
+                                        newHighlightedColumn = random.nextInt(2);
+                                    }
                                 }
+                                else {
+                                    //TODO: przemyslec czy wsm nie inna metoda do remisu
+                                    game.gameOver();
+                                }
+
+
+                                // obecnie jest blokada - ze nie moge isc w sr jak jest cale pelne
+                                // TODO: dowolny ruch dla drugiego gracza
+//                                else{
+
+//                                }
+                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
+                                changeHighlight();
+                                draw(smallBox);
+                                isX = !isX;
 
                             }
 
@@ -154,7 +229,17 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         createBigBoard();
-        scene = new Scene(grid, 600, 600);
+        Label turn = new Label("Now, it's your turn :");
+        turn.setStyle("-fx-font-weight: bolder; -fx-font-size: 30px");
+        playerX = new Label("Player X");
+        playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
+        playerO = new Label("Player O");
+        playerO.setStyle(" -fx-font-size: 22px");
+
+        VBox players = new VBox(turn, playerX, playerO);
+        players.setAlignment(Pos.BASELINE_CENTER);
+        HBox allElements = new HBox(grid, players);
+        scene = new Scene(allElements, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
 

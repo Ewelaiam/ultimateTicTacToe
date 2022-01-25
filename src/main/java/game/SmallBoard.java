@@ -10,6 +10,10 @@ public class SmallBoard {
         smallBoardValue = new char[]{'f','f','f','f','f','f','f','f','f'};
     }
 
+
+    public char getSmallBoardValue(int idx){
+        return smallBoardValue[idx];
+    }
     public char setSmallBoardValue(int x, int y, char c){
         smallBoardValue[3 * x + y] = c;
         return find3InLine(x, y);
@@ -18,6 +22,7 @@ public class SmallBoard {
     protected char changeFieldValue(int x, int y, boolean isX){
         actualPosition = 3 * x + y;
         smallBoardValue[actualPosition] = isX ? 'X' : 'O';
+        System.out.println(smallBoardValue);
         return find3InLine(x, y);
     }
 
@@ -107,6 +112,8 @@ public class SmallBoard {
     protected boolean isPossibleMove(){
         for (int i = 0; i < 9; i++){
             if(smallBoardValue[i] == 'f'){
+//                System.out.println("i" + i);
+//                System.out.println(smallBoardValue);
                 return true;
             }
         }

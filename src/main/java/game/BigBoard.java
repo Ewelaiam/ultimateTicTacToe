@@ -19,9 +19,13 @@ public class BigBoard {
     }
 
     protected void actualize(int x, int y, int prev_x, int prev_y, boolean isX){
+//        System.out.println("3 * prev_x + prev_y " + (3 * prev_x + prev_y));
         char c = bigBoardWithSmallBoards[3 * prev_x + prev_y].changeFieldValue(x, y, isX);
+        System.out.println("c " + c);
+
         if (c != 'f'){
             //TODO: wyslij do GUI info, zeby zmienic smallBoard prev na nieaktywna z napisem wygranego symbolu
+            game.makeDisable(prev_x, prev_y, c);
             char res = bigBoardValue.setSmallBoardValue(prev_x, prev_y, c);
             if (res != 'f'){
                 game.gameOver();
@@ -29,7 +33,15 @@ public class BigBoard {
         }
     }
 
-    public boolean isAllOccupied(int x, int y){
+    public boolean isAllOccupiedInSmallBoard(int x, int y){
         return !bigBoardWithSmallBoards[3 * x + y].isPossibleMove();
+    }
+
+    public boolean isAllOccupied(){
+        return !bigBoardValue.isPossibleMove();
+    }
+
+    public boolean isWon(int x, int y){
+        return bigBoardValue.getSmallBoardValue(3 * x + y) == 'O' || bigBoardValue.getSmallBoardValue(3 * x + y) == 'X';
     }
 }
