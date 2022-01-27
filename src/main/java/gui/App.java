@@ -5,16 +5,15 @@ import game.Game;
 import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.DepthTest;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
@@ -57,6 +56,7 @@ public class App extends Application {
     Label timerText;
     Text timeToEnd;
 
+    Spinner<Integer> spinner;
 //    private void addToTable(){
 //
 //    }
@@ -72,8 +72,8 @@ public class App extends Application {
 
 //        timeToEnd.setPadding(new Insets(20, 0, 0, 20));
 
-        totalMilisec = 6000;
-
+        totalMilisec = spinner.getValue() * 1000;
+        System.out.println(spinner.getValue());
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -82,7 +82,8 @@ public class App extends Application {
                 if(totalMilisec <= 0){
                     draw(new Button());
                     isX = !isX;
-                    totalMilisec = 6000;
+                    totalMilisec = spinner.getValue() * 1000;
+
                 }
 
             }
@@ -229,7 +230,7 @@ public class App extends Application {
                         box.getChildren().add(smallBox);
 
                         smallBox.setOnMouseClicked(event -> {
-                            totalMilisec = 6000;
+                            totalMilisec = spinner.getValue() * 1000;
                             Random random = new Random();
                             if(smallBox.getText() != "X" && smallBox.getText() != "O"){
                                 newHighlightedRow = GridPane.getRowIndex(smallBox);
@@ -247,7 +248,6 @@ public class App extends Application {
 //                                    System.out.println(newHighlightedRow+ " " + newHighlightedColumn );
 //                                    System.out.println(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn));
                                     while(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
-                                        System.out.println("elo while");
                                         newHighlightedRow = random.nextInt(2);
                                         newHighlightedColumn = random.nextInt(2);
                                     }
@@ -291,31 +291,36 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Label label1 = new Label("Time for move: ");
+        Label title = new Label("Ultimate Tic Tac Toe");
+        title.setStyle("-fx-font-weight: bolder; -fx-font-size: 40px");
+        title.setPadding(new Insets(0, 0,20,0));
+        Label label1 = new Label("Set time for move (seconds): ");
+        label1.setStyle("-fx-font-size: 20px");
         CheckBox checkBox1 = new CheckBox();
-        TextField textField1 = new TextField();
-        textField1.setVisible(false);
 
-//        checkBox1.setOnMouseClicked(e -> {
-//            textField1.setVisible(true);
-//        });
-
-        checkBox1.setOnAction(event -> {
-            textField1.setVisible(true);
-        });
+        spinner = new Spinner<>(1,60,10);
+        spinner.setVisible(false);
+        spinner.setStyle("-fx-font-size: 15px");
 
 
-//        if(checkBox1.isSelected()){
-//            textField1.setVisible(true);
-//        }
+        EventHandler<ActionEvent> event = e -> {
+            if (checkBox1.isSelected()) {
+                spinner.setVisible(true);
+            } else
+                spinner.setVisible(false);
+        };
+
+        checkBox1.setOnAction(event);
+
         Button button1 = new Button("Start");
-        VBox vbox1 = new VBox(label1, checkBox1, textField1, button1);
+        button1.setStyle("-fx-font-size: 20px");
+        VBox vbox1 = new VBox(title, label1, checkBox1, spinner, button1);
+        vbox1.setAlignment(Pos.CENTER);
 
         Scene scene1 = new Scene(vbox1, 600, 600);
 
 
         button1.setOnMouseClicked(e -> {
-            setTimer();
             createBigBoard();
             Label turn = new Label(" Now, it's your turn : ");
             turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
@@ -326,6 +331,8 @@ public class App extends Application {
             playerO.setStyle(" -fx-font-size: 22px");
 
             table = new Table();
+            setTimer();
+
 
             HBox players = new HBox(playerX, playerO);
             VBox playersBox = new VBox(turn, players, grid);
