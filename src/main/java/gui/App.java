@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.Effect;
@@ -23,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.Random;
@@ -52,16 +54,50 @@ public class App extends Application {
     Table table;
     int counter = 0;
 
+    Label timerText;
+    Text timeToEnd;
+
 //    private void addToTable(){
 //
 //    }
 
-    static long sec, milisec, totalMilisec;
+    private long sec, milisec, totalMilisec;
 
-    public static void convertTime(){
+    private void setTimer(){
+        timerText = new Label("Timer: ");
+        timerText.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
+        timerText.setPadding(new Insets(20, 0, 0, 20));
+        timeToEnd = new Text();
+        timeToEnd.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
+
+//        timeToEnd.setPadding(new Insets(20, 0, 0, 20));
+
+        totalMilisec = 6000;
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //System.out.println("Sekunda!");
+                convertTime();
+                if(totalMilisec <= 0){
+                    draw(new Button());
+                    isX = !isX;
+                    totalMilisec = 6000;
+                }
+
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(timerTask, 0, 100);
+
+    }
+
+    public void convertTime(){
         sec = TimeUnit.MILLISECONDS.toSeconds(totalMilisec);
         milisec = totalMilisec - (sec * 1000);
-        System.out.println(sec + ":" + milisec / 100);
+        //System.out.println(sec + ":" + milisec / 100);
+
+        timeToEnd.setText("   " + sec + ":" + milisec / 100);
         totalMilisec-=100;
     }
 
@@ -255,46 +291,61 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        totalMilisec = 6000;
+        Label label1 = new Label("Time for move: ");
+        CheckBox checkBox1 = new CheckBox();
+        TextField textField1 = new TextField();
+        textField1.setVisible(false);
 
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("Sekunda!");
-                convertTime();
-                if(totalMilisec <= 0){
-                    draw(new Button());
-                    isX = !isX;
-                    totalMilisec = 6000;
-                }
+//        checkBox1.setOnMouseClicked(e -> {
+//            textField1.setVisible(true);
+//        });
 
-            }
-        };
-        Timer timer = new Timer();
-        timer.schedule(timerTask, 0, 100);
+        checkBox1.setOnAction(event -> {
+            textField1.setVisible(true);
+        });
 
 
+//        if(checkBox1.isSelected()){
+//            textField1.setVisible(true);
+//        }
+        Button button1 = new Button("Start");
+        VBox vbox1 = new VBox(label1, checkBox1, textField1, button1);
 
-        createBigBoard();
-        Label turn = new Label(" Now, it's your turn : ");
-        turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
-        turn.setAlignment(Pos.CENTER);
-        playerX = new Label("  Player X  ");
-        playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
-        playerO = new Label("  Player O  ");
-        playerO.setStyle(" -fx-font-size: 22px");
+        Scene scene1 = new Scene(vbox1, 600, 600);
 
-        table = new Table();
 
-        HBox players = new HBox(playerX, playerO);
-        VBox playersBox = new VBox(turn, players, grid);
-        playersBox.setSpacing(10);
-        playersBox.setPadding(new Insets(10, 0, 0, 10));
-        players.setAlignment(Pos.BASELINE_CENTER);
-        HBox allElements = new HBox(playersBox, table.getVbox());
-        scene = new Scene(allElements, 1200, 600);
-        primaryStage.setScene(scene);
+        button1.setOnMouseClicked(e -> {
+            setTimer();
+            createBigBoard();
+            Label turn = new Label(" Now, it's your turn : ");
+            turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
+            turn.setAlignment(Pos.CENTER);
+            playerX = new Label("  Player X  ");
+            playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
+            playerO = new Label("  Player O  ");
+            playerO.setStyle(" -fx-font-size: 22px");
+
+            table = new Table();
+
+            HBox players = new HBox(playerX, playerO);
+            VBox playersBox = new VBox(turn, players, grid);
+            playersBox.setSpacing(10);
+            playersBox.setPadding(new Insets(10, 0, 0, 10));
+            players.setAlignment(Pos.BASELINE_CENTER);
+            VBox rightColumn = new VBox(table.getVbox(), timerText, timeToEnd);
+            HBox allElements = new HBox(playersBox, rightColumn);
+            scene = new Scene(allElements, 1200, 600);
+            primaryStage.setScene(scene);
+        });
+
+
+        primaryStage.setScene(scene1);
         primaryStage.show();
+
+
+
+//        primaryStage.setScene(scene);
+//        primaryStage.show();
 
 
 
