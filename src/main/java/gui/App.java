@@ -5,6 +5,7 @@ import game.Game;
 import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.DepthTest;
 import javafx.scene.Node;
@@ -25,6 +26,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
 
@@ -51,6 +55,15 @@ public class App extends Application {
 //    private void addToTable(){
 //
 //    }
+
+    static long sec, milisec, totalMilisec;
+
+    public static void convertTime(){
+        sec = TimeUnit.MILLISECONDS.toSeconds(totalMilisec);
+        milisec = totalMilisec - (sec * 1000);
+        System.out.println(sec + ":" + milisec / 100);
+        totalMilisec-=100;
+    }
 
     private void draw(Button btn){
         if(isX){
@@ -180,6 +193,7 @@ public class App extends Application {
                         box.getChildren().add(smallBox);
 
                         smallBox.setOnMouseClicked(event -> {
+                            totalMilisec = 6000;
                             Random random = new Random();
                             if(smallBox.getText() != "X" && smallBox.getText() != "O"){
                                 newHighlightedRow = GridPane.getRowIndex(smallBox);
@@ -223,8 +237,6 @@ public class App extends Application {
                                 changeHighlight();
                                 draw(smallBox);
                                 isX = !isX;
-
-
                             }
 
                         });
@@ -243,9 +255,30 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        totalMilisec = 6000;
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Sekunda!");
+                convertTime();
+                if(totalMilisec <= 0){
+                    draw(new Button());
+                    isX = !isX;
+                    totalMilisec = 6000;
+                }
+
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(timerTask, 0, 100);
+
+
+
         createBigBoard();
         Label turn = new Label(" Now, it's your turn : ");
-        turn.setStyle("-fx-font-weight: bolder; -fx-font-size: 30px");
+        turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
         turn.setAlignment(Pos.CENTER);
         playerX = new Label("  Player X  ");
         playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
@@ -256,6 +289,8 @@ public class App extends Application {
 
         HBox players = new HBox(playerX, playerO);
         VBox playersBox = new VBox(turn, players, grid);
+        playersBox.setSpacing(10);
+        playersBox.setPadding(new Insets(10, 0, 0, 10));
         players.setAlignment(Pos.BASELINE_CENTER);
         HBox allElements = new HBox(playersBox, table.getVbox());
         scene = new Scene(allElements, 1200, 600);

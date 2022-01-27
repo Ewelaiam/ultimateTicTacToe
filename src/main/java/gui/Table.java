@@ -27,7 +27,8 @@ public class Table {
 
     public Table(){
         Label title = new Label("Players moves: ");
-        title.setFont(new Font("Arial", 20));
+        title.setStyle("-fx-font-weight: 700; -fx-font-size: 30px; -fx-padding: 0 0 45px 0");
+
 
         table.setEditable(true);
 
@@ -40,15 +41,15 @@ public class Table {
         turn.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("turn"));
         player.setMinWidth(100);
         player.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("player"));
-        bigField.setMinWidth(100);
+        bigField.setMinWidth(200);
         bigField.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("bigField"));
-        smallField.setMinWidth(100);
+        smallField.setMinWidth(200);
         smallField.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("smallField"));
 
         table.getColumns().addAll(turn, player, bigField, smallField);
 
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 0, 0, 10));
+        vbox.setSpacing(10);
+        vbox.setPadding(new Insets(10, 0, 0, 20));
         vbox.getChildren().addAll(title, table);
 
 
