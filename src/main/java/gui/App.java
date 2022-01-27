@@ -1,5 +1,6 @@
 package gui;
 
+import game.Directions;
 import game.Game;
 import javafx.application.Application;
 import javafx.beans.Observable;
@@ -43,6 +44,13 @@ public class App extends Application {
     Label playerO;
 
     Game game;
+
+    Table table;
+    int counter = 0;
+
+//    private void addToTable(){
+//
+//    }
 
     private void draw(Button btn){
         if(isX){
@@ -205,10 +213,17 @@ public class App extends Application {
 //                                else{
 
 //                                }
+                                counter++;
+                                char x = isX ? 'X' : 'O';
+
+                                table.addToTable(String.valueOf(counter), String.valueOf(x), Directions.values()[highlightedGridX]
+                                        + " " + Directions.values()[highlightedGridY],  Directions.values()[newHighlightedRow] + " "
+                                        + Directions.values()[newHighlightedColumn]);
                                 game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
                                 changeHighlight();
                                 draw(smallBox);
                                 isX = !isX;
+
 
                             }
 
@@ -229,19 +244,25 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         createBigBoard();
-        Label turn = new Label("Now, it's your turn :");
+        Label turn = new Label(" Now, it's your turn : ");
         turn.setStyle("-fx-font-weight: bolder; -fx-font-size: 30px");
-        playerX = new Label("Player X");
+        turn.setAlignment(Pos.CENTER);
+        playerX = new Label("  Player X  ");
         playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
-        playerO = new Label("Player O");
+        playerO = new Label("  Player O  ");
         playerO.setStyle(" -fx-font-size: 22px");
 
-        VBox players = new VBox(turn, playerX, playerO);
+        table = new Table();
+
+        HBox players = new HBox(playerX, playerO);
+        VBox playersBox = new VBox(turn, players, grid);
         players.setAlignment(Pos.BASELINE_CENTER);
-        HBox allElements = new HBox(grid, players);
-        scene = new Scene(allElements, 1000, 600);
+        HBox allElements = new HBox(playersBox, table.getVbox());
+        scene = new Scene(allElements, 1200, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+
 
 
     }
