@@ -230,9 +230,8 @@ public class App extends Application {
                                 counter++;
                                 char x = isX ? 'X' : 'O';
 
-                                table.addToTable(String.valueOf(counter), String.valueOf(x), Directions.values()[highlightedGridX]
-                                        + " " + Directions.values()[highlightedGridY],  Directions.values()[newHighlightedRow] + " "
-                                        + Directions.values()[newHighlightedColumn]);
+                                table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+                                        String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
                                 game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
                                 changeHighlight();
                                 draw(smallBox);
