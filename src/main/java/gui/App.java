@@ -57,6 +57,13 @@ public class App extends Application {
     Text timeToEnd;
 
     Spinner<Integer> spinner;
+
+//    Spinner<Integer> spinner1;
+//    Button btn1;
+//    Spinner<Integer> spinner2;
+//    Button btn2;
+
+
 //    private void addToTable(){
 //
 //    }
@@ -125,16 +132,16 @@ public class App extends Application {
         if (!(newHighlightedRow == highlightedGridX && newHighlightedColumn == highlightedGridY)){
             GridPane toHighlight = null;
             GridPane highlighted = null;
-            ObservableList<Node> childrens = grid.getChildren();
+            ObservableList<Node> children = grid.getChildren();
 
-            for (Node node: childrens){
+            for (Node node: children){
                 if(GridPane.getRowIndex(node) == newHighlightedRow && GridPane.getColumnIndex(node) == newHighlightedColumn) {
                     toHighlight = (GridPane) node;
                     break;
                 }
             }
 
-            for (Node node: childrens){
+            for (Node node: children){
                 if(GridPane.getRowIndex(node) == highlightedGridX && GridPane.getColumnIndex(node) == highlightedGridY) {
                     highlighted = (GridPane) node;
                     break;
@@ -142,20 +149,20 @@ public class App extends Application {
             }
 
 
-            ObservableList<Node> childrens2;
+            ObservableList<Node> children2;
             if (toHighlight != null){
-                childrens2 = toHighlight.getChildren();
+                children2 = toHighlight.getChildren();
 
-                for (Node node: childrens2){
+                for (Node node: children2){
                     node.setDisable(false);
                 }
             }
 
-            ObservableList<Node> childrens3;
+            ObservableList<Node> children3;
             if (highlighted != null){
-                childrens3 = highlighted.getChildren();
+                children3 = highlighted.getChildren();
 
-                for (Node node: childrens3){
+                for (Node node: children3){
                     node.setDisable(true);
                 }
             }
@@ -167,11 +174,34 @@ public class App extends Application {
 
     }
 
+//    public void enableAllEmptyButtons(int x, int y){
+//        GridPane gridPaneToEnable = null;
+//        ObservableList<Node> children = grid.getChildren();
+//
+//        for (Node node: children){
+//            if(GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
+//                gridPaneToEnable = (GridPane) node;
+//                break;
+//            }
+//        }
+//
+//        ObservableList<Node> children2;
+//        if (gridPaneToEnable != null){
+//            children2 = gridPaneToEnable.getChildren();
+//
+//            for (Node node: children2){
+//                if()
+//                node.setDisable(false);
+//            }
+//        }
+//
+//    }
+
     public void makeDisable(int x, int y, char c){
         GridPane gridPane = null;
-        ObservableList<Node> childrens = grid.getChildren();
+        ObservableList<Node> children = grid.getChildren();
 
-        for (Node node: childrens){
+        for (Node node: children){
             if(GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
                 gridPane = (GridPane) node;
                 break;
@@ -251,6 +281,46 @@ public class App extends Application {
                                         newHighlightedRow = random.nextInt(2);
                                         newHighlightedColumn = random.nextInt(2);
                                     }
+                                    //TODO: przejsc przez cale, odblokowac wszystkie ktore nie sa X lub O, a potem znowu przejsc i zablowoac te co nie sa X lub O
+//                                    if(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+//                                        for (int i = 0; i < 3; i++){
+//                                            for (int j = 0; j < 3; j++){
+//                                                if(!(game.isAllOccupiedInSmallBoard(i, j) || game.isWon(i, j))) {
+//
+//                                                }
+//                                            }
+//                                        }
+
+
+//                                        spinner1.setVisible(true);
+//                                        btn1.setVisible(true);
+//                                        spinner2.setVisible(true);
+//                                        btn2.setVisible(true);
+//
+//
+//                                        btn1.setOnMouseClicked(e -> {
+//                                            newHighlightedRow = spinner1.getValue();
+//                                            spinner1.setVisible(false);
+//                                            btn1.setVisible(false);
+
+
+//                                        });
+//
+//                                        btn2.setOnMouseClicked(e -> {
+//                                            newHighlightedColumn = spinner2.getValue();
+//                                            spinner2.setVisible(false);
+//                                            btn2.setVisible(false);
+
+//                                        });
+
+//                                        try {
+//                                            TimeUnit.SECONDS.sleep(10);
+//                                        } catch (InterruptedException e) {
+//                                            e.printStackTrace();
+//                                        }
+
+
+                                    }
                                 }
                                 else {
                                     //TODO: przemyslec czy wsm nie inna metoda do remisu
@@ -272,7 +342,6 @@ public class App extends Application {
                                 changeHighlight();
                                 draw(smallBox);
                                 isX = !isX;
-                            }
 
                         });
 
@@ -333,6 +402,16 @@ public class App extends Application {
             table = new Table();
             setTimer();
 
+//            spinner1 = new Spinner<>(0,2,1);
+//            spinner1.setVisible(false);
+//            btn1 = new Button("Submit");
+//            btn1.setVisible(false);
+//            spinner2 = new Spinner<>(0,2,1);
+//            spinner2.setVisible(false);
+//            btn2 = new Button("Submit");
+//            btn2.setVisible(false);
+
+//            VBox magicClick = new VBox(spinner1, btn1, spinner2, btn2);
 
             HBox players = new HBox(playerX, playerO);
             VBox playersBox = new VBox(turn, players, grid);
