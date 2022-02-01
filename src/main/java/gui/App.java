@@ -3,27 +3,20 @@ package gui;
 import game.Directions;
 import game.Game;
 import javafx.application.Application;
-import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.DepthTest;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.Effect;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.util.Random;
@@ -35,15 +28,23 @@ public class App extends Application {
 
     //TODO: init()
 
+    Button startBtn;
+    VBox vboxScene1;
+    Scene scene1;
+
+    Label title;
+    Label subtitle;
+    CheckBox checkBox;
+    Label turn;
+
+    HBox players;
+    VBox playersBox;
+
+    VBox rightColumn;
+    HBox allElements;
+
     Scene scene;
     GridPane grid;
-
-    boolean isX = true;
-    int highlightedGridX = 1;
-    int highlightedGridY = 1;
-
-    int newHighlightedColumn = 1;
-    int newHighlightedRow = 1;
 
     Label playerX;
     Label playerO;
@@ -58,17 +59,88 @@ public class App extends Application {
 
     Spinner<Integer> spinner;
 
-//    Spinner<Integer> spinner1;
-//    Button btn1;
-//    Spinner<Integer> spinner2;
-//    Button btn2;
+    boolean isX = true;
+    int highlightedGridX = 1;
+    int highlightedGridY = 1;
 
+    int newHighlightedColumn = 1;
+    int newHighlightedRow = 1;
 
-//    private void addToTable(){
-//
-//    }
+    int clickedX;
+    int clickedY;
+    boolean isClicked = false;
 
     private long sec, milisec, totalMilisec;
+
+    Stage stage;
+
+
+    private void createScene1(){
+        title = new Label("Ultimate Tic Tac Toe");
+        title.setStyle("-fx-font-weight: bolder; -fx-font-size: 40px");
+        title.setPadding(new Insets(0, 0,20,0));
+
+        subtitle = new Label("Set time for move (seconds): ");
+        subtitle.setStyle("-fx-font-size: 20px");
+
+        checkBox = new CheckBox();
+
+        spinner = new Spinner<>(1,60,10);
+        spinner.setVisible(false);
+        spinner.setStyle("-fx-font-size: 15px");
+
+
+        EventHandler<ActionEvent> event = e -> {
+            if (checkBox.isSelected()) {
+                spinner.setVisible(true);
+            } else
+                spinner.setVisible(false);
+        };
+
+        checkBox.setOnAction(event);
+
+        startBtn = new Button("Start");
+        startBtn.setStyle("-fx-font-size: 20px");
+        vboxScene1 = new VBox(title, subtitle, checkBox, spinner, startBtn);
+        vboxScene1.setAlignment(Pos.CENTER);
+
+        scene1 = new Scene(vboxScene1, 600, 600);
+    }
+
+    public void createEndScene(char c){
+        Text text = new Text("Koniec gry");
+        text.setStyle("-fx-font-size: 40px");
+        Text text1 = new Text("Wygrana gracza: " + c);
+        text1.setStyle("-fx-font-size: 20px");
+        VBox endScene = new VBox(text, text1);
+        Scene scene3 = new Scene(endScene, 300, 200);
+
+        stage.setScene(scene3);
+    }
+
+    private void createPlayers(){
+        turn = new Label(" Now, it's your turn : ");
+        turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
+        turn.setAlignment(Pos.CENTER);
+
+        playerX = new Label("  Player X  ");
+        playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
+        playerO = new Label("  Player O  ");
+        playerO.setStyle(" -fx-font-size: 22px");
+
+        players = new HBox(playerX, playerO);
+        playersBox = new VBox(turn, players, grid);
+        playersBox.setSpacing(10);
+        playersBox.setPadding(new Insets(10, 0, 0, 10));
+        players.setAlignment(Pos.BASELINE_CENTER);
+
+    }
+
+    private void putElementInOrder(){
+        rightColumn = new VBox(table.getVbox(), timerText, timeToEnd);
+        allElements = new HBox(playersBox, rightColumn);
+    }
+
 
     private void setTimer(){
         timerText = new Label("Timer: ");
@@ -77,14 +149,12 @@ public class App extends Application {
         timeToEnd = new Text();
         timeToEnd.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
 
-//        timeToEnd.setPadding(new Insets(20, 0, 0, 20));
 
         totalMilisec = spinner.getValue() * 1000;
         System.out.println(spinner.getValue());
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                //System.out.println("Sekunda!");
                 convertTime();
                 if(totalMilisec <= 0){
                     draw(new Button());
@@ -103,7 +173,6 @@ public class App extends Application {
     public void convertTime(){
         sec = TimeUnit.MILLISECONDS.toSeconds(totalMilisec);
         milisec = totalMilisec - (sec * 1000);
-        //System.out.println(sec + ":" + milisec / 100);
 
         timeToEnd.setText("   " + sec + ":" + milisec / 100);
         totalMilisec-=100;
@@ -111,7 +180,6 @@ public class App extends Application {
 
     private void draw(Button btn){
         if(isX){
-//            Text text = new Text("X");
             btn.setText("X");
             btn.setStyle("-fx-text-fill: #6600ff; -fx-font-size: 24px");
             playerO.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
@@ -123,7 +191,6 @@ public class App extends Application {
             playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
             playerO.setStyle("-fx-font-size: 22px; -fx-background-color: none");
         }
-//        btn.setFont(Font.font(23));
 
 
     }
@@ -147,7 +214,6 @@ public class App extends Application {
                     break;
                 }
             }
-
 
             ObservableList<Node> children2;
             if (toHighlight != null){
@@ -174,28 +240,6 @@ public class App extends Application {
 
     }
 
-//    public void enableAllEmptyButtons(int x, int y){
-//        GridPane gridPaneToEnable = null;
-//        ObservableList<Node> children = grid.getChildren();
-//
-//        for (Node node: children){
-//            if(GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
-//                gridPaneToEnable = (GridPane) node;
-//                break;
-//            }
-//        }
-//
-//        ObservableList<Node> children2;
-//        if (gridPaneToEnable != null){
-//            children2 = gridPaneToEnable.getChildren();
-//
-//            for (Node node: children2){
-//                if()
-//                node.setDisable(false);
-//            }
-//        }
-//
-//    }
 
     public void makeDisable(int x, int y, char c){
         GridPane gridPane = null;
@@ -212,20 +256,18 @@ public class App extends Application {
 
         if (c == 'X') {
             gridPane.setStyle("-fx-background-color: #af7aff");
-            //TODO: nie dziala zmiana na niebieski :(((
-//            text.setStyle("-fx-text-fill: blue");
+
         } else {
             gridPane.setStyle("-fx-background-color: #84faa2");
-            text.setStyle("-fx-text-fill: gray");
-
         }
+
         text.setStyle("-fx-font-weight: bolder");
         text.setFont(Font.font(40));
         gridPane.setAlignment(Pos.CENTER);
         gridPane.add(text, 1, 1);
     }
 
-    private void createBigBoard(){
+    private void createScene2(Stage primaryStage){
         game = new Game(this);
         grid = new GridPane();
 
@@ -233,11 +275,8 @@ public class App extends Application {
         for (int blockColumn = 0; blockColumn < 3 ; blockColumn++) {
             for (int blockRow = 0; blockRow < 3; blockRow++) {
 
-
                 GridPane box = new GridPane();
                 box.setStyle("-fx-background-color: darkgray; -fx-background-insets: 0, 2; -fx-padding: 3;");
-//                box.setStyle("-fx-background-color: black, -fx-control-inner-background; -fx-background-insets: 0, 2; -fx-padding: 2;");
-
 
                 for (int column = 0; column < 3; column++) {
                     for (int row = 0 ; row < 3; row++) {
@@ -245,8 +284,6 @@ public class App extends Application {
                         Button smallBox = new Button();
                         smallBox.setLayoutX(row);
                         smallBox.setLayoutY(column);
-
-
 
                         if (blockColumn == highlightedGridY && blockRow == highlightedGridX){
                             smallBox.setDisable(false);
@@ -260,89 +297,70 @@ public class App extends Application {
                         box.getChildren().add(smallBox);
 
                         smallBox.setOnMouseClicked(event -> {
-                            totalMilisec = spinner.getValue() * 1000;
-                            Random random = new Random();
-                            if(smallBox.getText() != "X" && smallBox.getText() != "O"){
+                            if(smallBox.getText() != "X" && smallBox.getText() != "O") {
+
+                                totalMilisec = spinner.getValue() * 1000;
+                                Random random = new Random();
+
                                 newHighlightedRow = GridPane.getRowIndex(smallBox);
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
 
 
                                 // TODO: jesli allOccupied ale to jest tez wsm przypadek gdy SB wygrane przez X lub O
                                 // np !game.won
-                                // TODO: spr czy wszystkie small nie sa occupied (bo tutaj spr w 1 konkretnym small,
-                                // a chodzi zeby wychwycic przypadek konca gry jako remis)
-                                // np. && !game.all()
 
-                                if (!game.isAllOccupied()){
-//                                    System.out.println("elo if");
-//                                    System.out.println(newHighlightedRow+ " " + newHighlightedColumn );
-//                                    System.out.println(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn));
-                                    while(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+                                if (!game.isAllOccupied()) {
+                                    // obecnie jest blokada - ze nie moge isc w sr jak jest cale pelne
+                                    // TODO: dowolny ruch dla drugiego gracza :(
+                                    clickedX = newHighlightedRow;
+                                    clickedY = newHighlightedColumn;
+
+                                    while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)) {
+                                        isClicked = true;
                                         newHighlightedRow = random.nextInt(2);
                                         newHighlightedColumn = random.nextInt(2);
                                     }
-                                    //TODO: przejsc przez cale, odblokowac wszystkie ktore nie sa X lub O, a potem znowu przejsc i zablowoac te co nie sa X lub O
-//                                    if(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
-//                                        for (int i = 0; i < 3; i++){
-//                                            for (int j = 0; j < 3; j++){
-//                                                if(!(game.isAllOccupiedInSmallBoard(i, j) || game.isWon(i, j))) {
+                                    System.out.println(highlightedGridX + " " + highlightedGridY);
+                                } else {
+                                    char c = isX ? 'X' : '0';
+                                    createEndScene(c);
+
+
+//                                    EventHandler<ActionEvent> event2 = new
+//                                            EventHandler<ActionEvent>() {
+//                                                public void handle(ActionEvent e)
+//                                                {
+//                                                    // set alert type
+//                                                    a.setAlertType(Alert.AlertType.INFORMATION);
 //
+//                                                    // show the dialog
+//                                                    a.show();
 //                                                }
-//                                            }
-//                                        }
+//                                            };
+//                                    b2.setOnAction(event2);
 
-
-//                                        spinner1.setVisible(true);
-//                                        btn1.setVisible(true);
-//                                        spinner2.setVisible(true);
-//                                        btn2.setVisible(true);
-//
-//
-//                                        btn1.setOnMouseClicked(e -> {
-//                                            newHighlightedRow = spinner1.getValue();
-//                                            spinner1.setVisible(false);
-//                                            btn1.setVisible(false);
-
-
-//                                        });
-//
-//                                        btn2.setOnMouseClicked(e -> {
-//                                            newHighlightedColumn = spinner2.getValue();
-//                                            spinner2.setVisible(false);
-//                                            btn2.setVisible(false);
-
-//                                        });
-
-//                                        try {
-//                                            TimeUnit.SECONDS.sleep(10);
-//                                        } catch (InterruptedException e) {
-//                                            e.printStackTrace();
-//                                        }
-
-
-                                    }
-                                }
-                                else {
-                                    //TODO: przemyslec czy wsm nie inna metoda do remisu
-                                    game.gameOver();
+//                                    game.gameOver();
                                 }
 
-
-                                // obecnie jest blokada - ze nie moge isc w sr jak jest cale pelne
-                                // TODO: dowolny ruch dla drugiego gracza
-//                                else{
-
-//                                }
                                 counter++;
                                 char x = isX ? 'X' : 'O';
 
-                                table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
-                                        String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
-                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
+                                if(isClicked){
+                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+                                            String.valueOf(Directions.values()[3 * clickedX + clickedY]));
+                                    game.nextMove(clickedX, clickedY, highlightedGridX, highlightedGridY, isX);
+                                    isClicked = false;
+                                }
+                                else {
+                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+                                            String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
+                                    game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
+                                }
+
                                 changeHighlight();
                                 draw(smallBox);
                                 isX = !isX;
-
+                            }
                         });
 
                     }
@@ -351,75 +369,28 @@ public class App extends Application {
                 GridPane.setConstraints(box, blockColumn, blockRow);
                 grid.getChildren().add(box);
 
+                }
             }
-        }
 
-    }
+        }
 
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
 
-        Label title = new Label("Ultimate Tic Tac Toe");
-        title.setStyle("-fx-font-weight: bolder; -fx-font-size: 40px");
-        title.setPadding(new Insets(0, 0,20,0));
-        Label label1 = new Label("Set time for move (seconds): ");
-        label1.setStyle("-fx-font-size: 20px");
-        CheckBox checkBox1 = new CheckBox();
+        createScene1();
 
-        spinner = new Spinner<>(1,60,10);
-        spinner.setVisible(false);
-        spinner.setStyle("-fx-font-size: 15px");
-
-
-        EventHandler<ActionEvent> event = e -> {
-            if (checkBox1.isSelected()) {
-                spinner.setVisible(true);
-            } else
-                spinner.setVisible(false);
-        };
-
-        checkBox1.setOnAction(event);
-
-        Button button1 = new Button("Start");
-        button1.setStyle("-fx-font-size: 20px");
-        VBox vbox1 = new VBox(title, label1, checkBox1, spinner, button1);
-        vbox1.setAlignment(Pos.CENTER);
-
-        Scene scene1 = new Scene(vbox1, 600, 600);
-
-
-        button1.setOnMouseClicked(e -> {
-            createBigBoard();
-            Label turn = new Label(" Now, it's your turn : ");
-            turn.setStyle("-fx-font-weight: 700; -fx-font-size: 30px");
-            turn.setAlignment(Pos.CENTER);
-            playerX = new Label("  Player X  ");
-            playerX.setStyle("-fx-font-size: 22px; -fx-background-color: yellow");
-            playerO = new Label("  Player O  ");
-            playerO.setStyle(" -fx-font-size: 22px");
+        startBtn.setOnMouseClicked(e -> {
+            createScene2(primaryStage);
+            createPlayers();
 
             table = new Table();
+
             setTimer();
 
-//            spinner1 = new Spinner<>(0,2,1);
-//            spinner1.setVisible(false);
-//            btn1 = new Button("Submit");
-//            btn1.setVisible(false);
-//            spinner2 = new Spinner<>(0,2,1);
-//            spinner2.setVisible(false);
-//            btn2 = new Button("Submit");
-//            btn2.setVisible(false);
+            putElementInOrder();
 
-//            VBox magicClick = new VBox(spinner1, btn1, spinner2, btn2);
-
-            HBox players = new HBox(playerX, playerO);
-            VBox playersBox = new VBox(turn, players, grid);
-            playersBox.setSpacing(10);
-            playersBox.setPadding(new Insets(10, 0, 0, 10));
-            players.setAlignment(Pos.BASELINE_CENTER);
-            VBox rightColumn = new VBox(table.getVbox(), timerText, timeToEnd);
-            HBox allElements = new HBox(playersBox, rightColumn);
             scene = new Scene(allElements, 1200, 600);
             primaryStage.setScene(scene);
         });
@@ -427,13 +398,6 @@ public class App extends Application {
 
         primaryStage.setScene(scene1);
         primaryStage.show();
-
-
-
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
-
-
 
 
     }

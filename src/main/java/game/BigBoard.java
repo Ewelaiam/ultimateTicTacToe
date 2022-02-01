@@ -9,7 +9,6 @@ public class BigBoard {
     public BigBoard(Game game){
         this.game = game;
         //bigBoardValue = new ArrayList<>();
-        // TODO: przemyśleć czy da sie bez settera
         bigBoardValue = new SmallBoard();
         bigBoardWithSmallBoards = new SmallBoard[9];
         for (int i = 0; i < 9; i++){
@@ -20,15 +19,14 @@ public class BigBoard {
 
     protected void actualize(int x, int y, int prev_x, int prev_y, boolean isX){
 //        System.out.println("3 * prev_x + prev_y " + (3 * prev_x + prev_y));
-        char c = bigBoardWithSmallBoards[3 * prev_x + prev_y].changeFieldValue(x, y, isX);
+        char c = isX ? 'X' : '0';
+
         System.out.println("c " + c);
 
-        if (c != 'f'){
-            //TODO: wyslij do GUI info, zeby zmienic smallBoard prev na nieaktywna z napisem wygranego symbolu
+        if (bigBoardWithSmallBoards[3 * prev_x + prev_y].changeFieldValue(x, y, isX)){
             game.makeDisable(prev_x, prev_y, c);
-            char res = bigBoardValue.setSmallBoardValue(prev_x, prev_y, c);
-            if (res != 'f'){
-                game.gameOver();
+            if (bigBoardValue.changeFieldValue(prev_x, prev_y, isX)){
+                game.gameOver(c);
             }
         }
     }

@@ -14,34 +14,27 @@ public class SmallBoard {
     public char getSmallBoardValue(int idx){
         return smallBoardValue[idx];
     }
-    public char setSmallBoardValue(int x, int y, char c){
-        smallBoardValue[3 * x + y] = c;
-        return find3InLine(x, y);
-    }
 
-    protected char changeFieldValue(int x, int y, boolean isX){
+
+    protected boolean changeFieldValue(int x, int y, boolean isX){
         actualPosition = 3 * x + y;
         smallBoardValue[actualPosition] = isX ? 'X' : 'O';
         System.out.println(smallBoardValue);
         return find3InLine(x, y);
+
     }
 
-    //TODO: char porownuje == (bo typ prosty) - upenic sie
-    private char find3InLine(int x, int y){
-//         corners + middle
+    private boolean find3InLine(int x, int y){
         if (((x == 0 || x == 2) && (y == 0 || y == 2)) || (x == 1 && y == 1)){
             if(diagonal()){
-                return smallBoardValue[actualPosition];
+                return true;
             }
         }
 
         if(horizontal()){
-            return smallBoardValue[actualPosition];
+            return true;
         }
-        else if(vertical()){
-            return smallBoardValue[actualPosition];
-        }
-        else return 'f';
+        else return vertical();
 
     }
 

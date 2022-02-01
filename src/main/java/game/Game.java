@@ -4,12 +4,10 @@ import gui.App;
 
 public class Game {
     private BigBoard bigBoard;
-    private boolean endOfGame;
     private App app;
 
     public Game(App app){
         bigBoard = new BigBoard(this);
-        endOfGame = false;
         this.app = app;
     }
 
@@ -26,10 +24,8 @@ public class Game {
         return bigBoard.isAllOccupied();
     }
 
-    public void gameOver(){
-        endOfGame = true;
-
-        //TODO: cos ala exit(0); czy nowe okno z wynikami?? albo app.endGame i tam cos
+    public void gameOver(char c){
+        app.createEndScene(c);
     }
 
     public boolean isWon(int x, int y){
