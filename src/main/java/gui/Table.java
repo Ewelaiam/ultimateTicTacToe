@@ -1,16 +1,11 @@
 package gui;
 
-import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 
 public class Table {
@@ -18,10 +13,10 @@ public class Table {
     private TableView<PlayerMove> table = new TableView<PlayerMove>();
     final VBox vbox = new VBox();
 
-    private TableColumn<PlayerMove, String> turn;
-    private TableColumn<PlayerMove, String> player;
-    private TableColumn<PlayerMove, String> bigField;
-    private TableColumn<PlayerMove, String> smallField;
+    private final TableColumn<PlayerMove, String> turn;
+    private final TableColumn<PlayerMove, String> player;
+    private final TableColumn<PlayerMove, String> bigField;
+    private final TableColumn<PlayerMove, String> smallField;
 
 
 
@@ -38,13 +33,13 @@ public class Table {
         smallField = new TableColumn("Field");
 
         turn.setMinWidth(100);
-        turn.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("turn"));
+        turn.setCellValueFactory(new PropertyValueFactory<>("turn"));
         player.setMinWidth(100);
-        player.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("player"));
+        player.setCellValueFactory(new PropertyValueFactory<>("player"));
         bigField.setMinWidth(200);
-        bigField.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("bigField"));
+        bigField.setCellValueFactory(new PropertyValueFactory<>("bigField"));
         smallField.setMinWidth(200);
-        smallField.setCellValueFactory(new PropertyValueFactory<PlayerMove, String>("smallField"));
+        smallField.setCellValueFactory(new PropertyValueFactory<>("smallField"));
 
         table.getColumns().addAll(turn, player, bigField, smallField);
 
@@ -53,36 +48,15 @@ public class Table {
         vbox.getChildren().addAll(title, table);
 
 
-//        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-
     }
 
     public VBox getVbox() {
         return vbox;
     }
-//
-//    public TableView<PlayerMove> getTable() {
-//        return table;
-//    }
+
 
     public void addToTable(String turnValue, String playerValue, String bigFieldValue, String smallFieldValue){
         table.getItems().add(new PlayerMove(turnValue, playerValue, bigFieldValue, smallFieldValue));
-//        data.add(new PlayerMove(turnValue, playerValue, fieldValue));
-//        System.out.println(data);
-
-//        table.setItems(data);
-//        table.getColumns().addAll(turn, player, field);
-//
-//        hb.getChildren().addAll(addFirstName, addLastName, addEmail, addButton);
-//        hb.setSpacing(3);
-//
-//        final VBox vbox = new VBox();
-//        vbox.setSpacing(5);
-//        vbox.setPadding(new Insets(10, 0, 0, 10));
-//        vbox.getChildren().addAll(label, table, hb);
-//
-//        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-        //table.getItems().add(new PlayerMove(turnValue, playerValue, fieldValue));
 
     }
 }

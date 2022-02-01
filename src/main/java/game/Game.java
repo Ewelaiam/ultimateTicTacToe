@@ -3,15 +3,14 @@ package game;
 import gui.App;
 
 public class Game {
-    private BigBoard bigBoard;
-    private App app;
+    private final BigBoard bigBoard;
+    private final App app;
 
     public Game(App app){
         bigBoard = new BigBoard(this);
         this.app = app;
     }
 
-    //TODO: public?
     public void nextMove(int x, int y, int prev_x, int prev_y, boolean isX){
         bigBoard.actualize(x,y, prev_x, prev_y, isX);
     }

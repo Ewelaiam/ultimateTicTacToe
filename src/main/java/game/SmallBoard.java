@@ -1,9 +1,7 @@
 package game;
 
 public class SmallBoard {
-    //TODO: tablica statyczna czy dynamiczna
-    private char[] smallBoardValue;
-    // TODO: moze zamiast 3 * x + y stworzyc tutaj int pos i zainicjowac w changeField..
+    private final char[] smallBoardValue;
     private int actualPosition;
 
     public SmallBoard(){
@@ -11,7 +9,7 @@ public class SmallBoard {
     }
 
 
-    public char getSmallBoardValue(int idx){
+    protected char getSmallBoardValue(int idx){
         return smallBoardValue[idx];
     }
 
@@ -19,7 +17,6 @@ public class SmallBoard {
     protected boolean changeFieldValue(int x, int y, boolean isX){
         actualPosition = 3 * x + y;
         smallBoardValue[actualPosition] = isX ? 'X' : 'O';
-        System.out.println(smallBoardValue);
         return find3InLine(x, y);
 
     }
@@ -105,8 +102,6 @@ public class SmallBoard {
     protected boolean isPossibleMove(){
         for (int i = 0; i < 9; i++){
             if(smallBoardValue[i] == 'f'){
-//                System.out.println("i" + i);
-//                System.out.println(smallBoardValue);
                 return true;
             }
         }
