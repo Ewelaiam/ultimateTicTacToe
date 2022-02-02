@@ -197,6 +197,7 @@ public class App extends Application {
             }
         }
 
+
         Text text = new Text(String.valueOf(c));
 
         if(gridPane != null){
@@ -248,15 +249,14 @@ public class App extends Application {
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
 
 
-
                                 if (!game.isAllOccupied()) {
                                     clickedX = newHighlightedRow;
                                     clickedY = newHighlightedColumn;
 
                                     while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)) {
                                         isClicked = true;
-                                        newHighlightedRow = random.nextInt(2);
-                                        newHighlightedColumn = random.nextInt(2);
+                                        newHighlightedRow = random.nextInt(3);
+                                        newHighlightedColumn = random.nextInt(3);
                                     }
                                 } else {
                                     char c = isX ? 'X' : '0';
@@ -278,6 +278,10 @@ public class App extends Application {
                                     game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
                                 }
 
+                                while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+                                    newHighlightedRow = random.nextInt(3);
+                                    newHighlightedColumn = random.nextInt(3);
+                                }
                                 changeHighlight();
                                 draw(smallBox);
                                 changeX();
