@@ -18,7 +18,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.Random;
 
 public class App extends Application {
 
@@ -46,10 +45,11 @@ public class App extends Application {
     int newHighlightedColumn = 1;
     int newHighlightedRow = 1;
 
-    int clickedX, clickedY;
 
     boolean isX = true;
-    boolean isClicked = false;
+
+    boolean isMagic = false;
+    boolean[] isOccupied = {false, false, false, false, false, false, false, false, false};
 
 
     Stage stage;
@@ -177,37 +177,8 @@ public class App extends Application {
                     node.setDisable(true);
                 }
             }
-
-
         }
-
     }
-
-    boolean isMagic = false;
-    boolean[] isOccupied = {false, false, false, false, false, false, false, false, false};
-//    boolean[][] isOccupied = new boolean[9][9];
-
-//    private void magic(){
-//        GridPane toHighlight = null;
-//        ObservableList<Node> children = grid.getChildren();
-//
-//        int cnt = 0;
-//        for (Node node: children){
-//            int cnt1 = 0;
-//                toHighlight = (GridPane) node;
-//                ObservableList<Node> children1 = toHighlight.getChildren();
-//                for (Node node1 : children1){
-//                    if(isOccupied[cnt][cnt1]){
-//                        node1.setDisable(true);
-//                    }
-//                    else {
-//                        node1.setDisable(false);
-//                    }
-//                    cnt1++;
-//            }
-//            cnt++;
-//        }
-//    }
 
 
     public void makeDisable(int x, int y, char c){
@@ -249,7 +220,7 @@ public class App extends Application {
         gridPane.add(text, 1, 1);
     }
 
-    public void makeSth(int x, int y, boolean b) {
+    public void enableOrDisableSmallBoard(int x, int y, boolean b) {
         GridPane gridPane = null;
         ObservableList<Node> children = grid.getChildren();
 
@@ -276,9 +247,7 @@ public class App extends Application {
     }
 
 
-
-
-        private void createMainScene(){
+    private void createMainScene(){
         game = new Game(this);
         grid = new GridPane();
 
@@ -306,7 +275,6 @@ public class App extends Application {
 
 
                                 moveTimer.timeToMove();
-                                Random random = new Random();
 
                                 newHighlightedRow = GridPane.getRowIndex(smallBox);
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
@@ -318,7 +286,7 @@ public class App extends Application {
                                     for (int i = 0; i < 3; i++){
                                         for(int j = 0; j < 3; j++){
                                             if(isOccupied[3 * i + j] && !(i == newHighlightedRow && j == newHighlightedColumn)){
-                                                makeSth(i,j,false);
+                                                enableOrDisableSmallBoard(i,j,false);
                                             }
                                             isOccupied[3 * i + j] = false;
                                         }
@@ -326,35 +294,18 @@ public class App extends Application {
                                     isMagic = false;
                                 }
                                 if (!game.isAllOccupied()) {
-                                    clickedX = newHighlightedRow;
-                                    clickedY = newHighlightedColumn;
 
-//                                    while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)) {
-//                                        isClicked = true;
-//                                        newHighlightedRow = random.nextInt(3);
-//                                        newHighlightedColumn = random.nextInt(3);
-//                                    }
+
                                     if(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
                                         isMagic = true;
-//                                        magic();
                                         for (int i = 0; i < 3; i++){
                                             for (int j = 0; j < 3; j++){
                                                 if(!(game.isAllOccupiedInSmallBoard(i, j) || game.isWon(i, j))){
-//                                                       for (int k = 0; k < 3; k++){
-//                                                           for (int l = 0; l < 3; l++){
-//                                                               if(game.isF(i,j,k,l)){
-//
-//                                                               }
-//                                                           }
-//                                                       }
-                                                    makeSth(i, j, true);
+                                                    enableOrDisableSmallBoard(i, j, true);
                                                     isOccupied[3 * i + j] = true;
                                                 }
                                             }
                                         }
-//                                        for (int i = 0; i < 9; i++){
-//                                            System.out.print(isOccupied[i] + " ");
-//                                        }
                                     }
 
                                 } else {
@@ -367,47 +318,16 @@ public class App extends Application {
 
                                 table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
                                         String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
-                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX, isMagic);
+                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
 
                                 if(!isMagic){
-//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * newHighlightedRow + newHighlightedColumn] = true;
                                     changeHighlight();
                                     highlightedGridX = newHighlightedRow;
                                     highlightedGridY = newHighlightedColumn;
                                 }
 
-
-                                System.out.println("h " + highlightedGridX + " " + highlightedGridY);
-                                System.out.println("nh " + newHighlightedRow + " " + newHighlightedColumn);
-
-
-
                                 draw(smallBox);
                                 changeX();
-//
-//                                if(isClicked){
-//                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
-//                                            String.valueOf(Directions.values()[3 * clickedX + clickedY]));
-//                                    game.nextMove(clickedX, clickedY, highlightedGridX, highlightedGridY, isX);
-//                                    isClicked = false;
-//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * clickedX + clickedY] = true;
-//
-//                                }
-//                                else {
-//                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
-//                                            String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
-//                                    game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
-//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * newHighlightedRow + newHighlightedColumn] = true;
-//                                }
-//
-//                                while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
-//                                    newHighlightedRow = random.nextInt(3);
-//                                    newHighlightedColumn = random.nextInt(3);
-//                                }
-//                                changeHighlight();
-//                                draw(smallBox);
-//                                changeX();
-
                             }
                         });
 
@@ -416,7 +336,6 @@ public class App extends Application {
 
                 GridPane.setConstraints(box, bigColumn, bigRow);
                 grid.getChildren().add(box);
-
                 }
             }
 

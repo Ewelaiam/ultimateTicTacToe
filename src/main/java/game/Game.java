@@ -11,8 +11,8 @@ public class Game {
         this.app = app;
     }
 
-    public void nextMove(int x, int y, int prev_x, int prev_y, boolean isX, boolean isMagic){
-        bigBoard.actualize(x,y, prev_x, prev_y, isX, isMagic);
+    public void nextMove(int x, int y, int prev_x, int prev_y, boolean isX){
+        bigBoard.actualize(x,y, prev_x, prev_y, isX);
     }
 
     public boolean isAllOccupiedInSmallBoard(int x, int y){
