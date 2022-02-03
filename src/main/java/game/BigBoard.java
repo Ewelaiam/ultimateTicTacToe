@@ -14,15 +14,19 @@ public class BigBoard {
         }
     }
 
-    protected void actualize(int x, int y, int prev_x, int prev_y, boolean isX){
+    protected void actualize(int x, int y, int prev_x, int prev_y, boolean isX, boolean isMagic){
         char c = isX ? 'X' : '0';
 
 
         if (bigBoardWithSmallBoards[3 * prev_x + prev_y].changeFieldValue(x, y, isX)){
+
             game.makeDisable(prev_x, prev_y, c);
+            System.out.println("duza");
             if (bigBoardValue.changeFieldValue(prev_x, prev_y, isX)){
                 game.gameOver(c);
             }
+
+
         }
     }
 
@@ -36,5 +40,9 @@ public class BigBoard {
 
     protected boolean isWon(int x, int y){
         return bigBoardValue.getSmallBoardValue(3 * x + y) == 'O' || bigBoardValue.getSmallBoardValue(3 * x + y) == 'X';
+    }
+
+    protected boolean isF(int cordX, int cordY, int x, int y){
+        return bigBoardWithSmallBoards[3 * cordX + cordY].isF(x,y);
     }
 }

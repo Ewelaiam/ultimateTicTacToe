@@ -178,12 +178,36 @@ public class App extends Application {
                 }
             }
 
-            highlightedGridX = newHighlightedRow;
-            highlightedGridY = newHighlightedColumn;
 
         }
 
     }
+
+    boolean isMagic = false;
+    boolean[] isOccupied = {false, false, false, false, false, false, false, false, false};
+//    boolean[][] isOccupied = new boolean[9][9];
+
+//    private void magic(){
+//        GridPane toHighlight = null;
+//        ObservableList<Node> children = grid.getChildren();
+//
+//        int cnt = 0;
+//        for (Node node: children){
+//            int cnt1 = 0;
+//                toHighlight = (GridPane) node;
+//                ObservableList<Node> children1 = toHighlight.getChildren();
+//                for (Node node1 : children1){
+//                    if(isOccupied[cnt][cnt1]){
+//                        node1.setDisable(true);
+//                    }
+//                    else {
+//                        node1.setDisable(false);
+//                    }
+//                    cnt1++;
+//            }
+//            cnt++;
+//        }
+//    }
 
 
     public void makeDisable(int x, int y, char c){
@@ -194,6 +218,15 @@ public class App extends Application {
             if(GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
                 gridPane = (GridPane) node;
                 break;
+            }
+        }
+
+        ObservableList<Node> children2;
+        if (gridPane != null){
+            children2 = gridPane.getChildren();
+
+            for (Node node: children2){
+                node.setDisable(true);
             }
         }
 
@@ -216,7 +249,36 @@ public class App extends Application {
         gridPane.add(text, 1, 1);
     }
 
-    private void createMainScene(){
+    public void makeSth(int x, int y, boolean b) {
+        GridPane gridPane = null;
+        ObservableList<Node> children = grid.getChildren();
+
+        for (Node node : children) {
+            if (GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
+                gridPane = (GridPane) node;
+                break;
+            }
+        }
+
+        ObservableList<Node> children2;
+        if (gridPane != null){
+            children2 = gridPane.getChildren();
+
+            for (Node node: children2){
+                if(b){
+                    node.setDisable(false);
+                }
+                else {
+                    node.setDisable(true);
+                }
+            }
+        }
+    }
+
+
+
+
+        private void createMainScene(){
         game = new Game(this);
         grid = new GridPane();
 
@@ -242,6 +304,7 @@ public class App extends Application {
                         smallBox.setOnMouseClicked(event -> {
                             if(!smallBox.getText().equals("X") && !smallBox.getText().equals("O")) {
 
+
                                 moveTimer.timeToMove();
                                 Random random = new Random();
 
@@ -249,15 +312,51 @@ public class App extends Application {
                                 newHighlightedColumn = GridPane.getColumnIndex(smallBox);
 
 
+                                if(isMagic){
+                                    highlightedGridX = GridPane.getRowIndex(box);
+                                    highlightedGridY = GridPane.getColumnIndex(box);
+                                    for (int i = 0; i < 3; i++){
+                                        for(int j = 0; j < 3; j++){
+                                            if(isOccupied[3 * i + j] && !(i == newHighlightedRow && j == newHighlightedColumn)){
+                                                makeSth(i,j,false);
+                                            }
+                                            isOccupied[3 * i + j] = false;
+                                        }
+                                    }
+                                    isMagic = false;
+                                }
                                 if (!game.isAllOccupied()) {
                                     clickedX = newHighlightedRow;
                                     clickedY = newHighlightedColumn;
 
-                                    while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)) {
-                                        isClicked = true;
-                                        newHighlightedRow = random.nextInt(3);
-                                        newHighlightedColumn = random.nextInt(3);
+//                                    while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)) {
+//                                        isClicked = true;
+//                                        newHighlightedRow = random.nextInt(3);
+//                                        newHighlightedColumn = random.nextInt(3);
+//                                    }
+                                    if(game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+                                        isMagic = true;
+//                                        magic();
+                                        for (int i = 0; i < 3; i++){
+                                            for (int j = 0; j < 3; j++){
+                                                if(!(game.isAllOccupiedInSmallBoard(i, j) || game.isWon(i, j))){
+//                                                       for (int k = 0; k < 3; k++){
+//                                                           for (int l = 0; l < 3; l++){
+//                                                               if(game.isF(i,j,k,l)){
+//
+//                                                               }
+//                                                           }
+//                                                       }
+                                                    makeSth(i, j, true);
+                                                    isOccupied[3 * i + j] = true;
+                                                }
+                                            }
+                                        }
+//                                        for (int i = 0; i < 9; i++){
+//                                            System.out.print(isOccupied[i] + " ");
+//                                        }
                                     }
+
                                 } else {
                                     char c = isX ? 'X' : '0';
                                     createEndScene(c);
@@ -266,25 +365,49 @@ public class App extends Application {
                                 counter++;
                                 char x = isX ? 'X' : 'O';
 
-                                if(isClicked){
-                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
-                                            String.valueOf(Directions.values()[3 * clickedX + clickedY]));
-                                    game.nextMove(clickedX, clickedY, highlightedGridX, highlightedGridY, isX);
-                                    isClicked = false;
-                                }
-                                else {
-                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
-                                            String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
-                                    game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
+                                table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+                                        String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
+                                game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX, isMagic);
+
+                                if(!isMagic){
+//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * newHighlightedRow + newHighlightedColumn] = true;
+                                    changeHighlight();
+                                    highlightedGridX = newHighlightedRow;
+                                    highlightedGridY = newHighlightedColumn;
                                 }
 
-                                while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
-                                    newHighlightedRow = random.nextInt(3);
-                                    newHighlightedColumn = random.nextInt(3);
-                                }
-                                changeHighlight();
+
+                                System.out.println("h " + highlightedGridX + " " + highlightedGridY);
+                                System.out.println("nh " + newHighlightedRow + " " + newHighlightedColumn);
+
+
+
                                 draw(smallBox);
                                 changeX();
+//
+//                                if(isClicked){
+//                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+//                                            String.valueOf(Directions.values()[3 * clickedX + clickedY]));
+//                                    game.nextMove(clickedX, clickedY, highlightedGridX, highlightedGridY, isX);
+//                                    isClicked = false;
+//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * clickedX + clickedY] = true;
+//
+//                                }
+//                                else {
+//                                    table.addToTable(String.valueOf(counter), String.valueOf(x), String.valueOf(Directions.values()[3 * highlightedGridX + highlightedGridY]),
+//                                            String.valueOf(Directions.values()[3 * newHighlightedRow + newHighlightedColumn]));
+//                                    game.nextMove(newHighlightedRow, newHighlightedColumn, highlightedGridX, highlightedGridY, isX);
+//                                    isOccupied[3 * highlightedGridX + highlightedGridY][3 * newHighlightedRow + newHighlightedColumn] = true;
+//                                }
+//
+//                                while (game.isAllOccupiedInSmallBoard(newHighlightedRow, newHighlightedColumn) || game.isWon(newHighlightedRow, newHighlightedColumn)){
+//                                    newHighlightedRow = random.nextInt(3);
+//                                    newHighlightedColumn = random.nextInt(3);
+//                                }
+//                                changeHighlight();
+//                                draw(smallBox);
+//                                changeX();
+
                             }
                         });
 

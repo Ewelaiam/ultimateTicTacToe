@@ -11,8 +11,8 @@ public class Game {
         this.app = app;
     }
 
-    public void nextMove(int x, int y, int prev_x, int prev_y, boolean isX){
-        bigBoard.actualize(x,y, prev_x, prev_y, isX);
+    public void nextMove(int x, int y, int prev_x, int prev_y, boolean isX, boolean isMagic){
+        bigBoard.actualize(x,y, prev_x, prev_y, isX, isMagic);
     }
 
     public boolean isAllOccupiedInSmallBoard(int x, int y){
@@ -33,6 +33,10 @@ public class Game {
 
     public void makeDisable(int x, int y, char c){
         app.makeDisable(x,y, c);
+    }
+
+    public boolean isF(int cordX, int cordY, int x, int y){
+        return bigBoard.isF(cordX, cordY, x, y);
     }
 
 }
