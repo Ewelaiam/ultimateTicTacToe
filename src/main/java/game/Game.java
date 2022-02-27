@@ -35,8 +35,4 @@ public class Game {
         app.makeDisable(x,y, c);
     }
 
-    public boolean isF(int cordX, int cordY, int x, int y){
-        return bigBoard.isF(cordX, cordY, x, y);
-    }
-
 }

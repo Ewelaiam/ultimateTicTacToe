@@ -17,7 +17,6 @@ public class SmallBoard {
     protected boolean changeFieldValue(int x, int y, boolean isX){
         actualPosition = 3 * x + y;
         smallBoardValue[actualPosition] = isX ? 'X' : 'O';
-        System.out.println(smallBoardValue);
         return find3InLine(x, y);
 
     }
@@ -107,10 +106,6 @@ public class SmallBoard {
             }
         }
         return false;
-    }
-
-    protected boolean isF(int x, int y){
-        return smallBoardValue[3 * x + y] == 'f';
     }
 
 

@@ -140,48 +140,7 @@ public class App extends Application {
 
     }
 
-    private void changeHighlight(){
-        if (!(newHighlightedRow == highlightedGridX && newHighlightedColumn == highlightedGridY)){
-            GridPane toHighlight = null;
-            GridPane highlighted = null;
-            ObservableList<Node> children = grid.getChildren();
-
-            for (Node node: children){
-                if(GridPane.getRowIndex(node) == newHighlightedRow && GridPane.getColumnIndex(node) == newHighlightedColumn) {
-                    toHighlight = (GridPane) node;
-                    break;
-                }
-            }
-
-            for (Node node: children){
-                if(GridPane.getRowIndex(node) == highlightedGridX && GridPane.getColumnIndex(node) == highlightedGridY) {
-                    highlighted = (GridPane) node;
-                    break;
-                }
-            }
-
-            ObservableList<Node> children2;
-            if (toHighlight != null){
-                children2 = toHighlight.getChildren();
-
-                for (Node node: children2){
-                    node.setDisable(false);
-                }
-            }
-
-            ObservableList<Node> children3;
-            if (highlighted != null){
-                children3 = highlighted.getChildren();
-
-                for (Node node: children3){
-                    node.setDisable(true);
-                }
-            }
-        }
-    }
-
-
-    public void makeDisable(int x, int y, char c){
+    private GridPane setDisableOfSmallBoardButtons(int x, int y, boolean b){
         GridPane gridPane = null;
         ObservableList<Node> children = grid.getChildren();
 
@@ -197,10 +156,22 @@ public class App extends Application {
             children2 = gridPane.getChildren();
 
             for (Node node: children2){
-                node.setDisable(true);
+                node.setDisable(b);
             }
         }
+        return gridPane;
+    }
 
+    private void changeHighlight(){
+        if (!(newHighlightedRow == highlightedGridX && newHighlightedColumn == highlightedGridY)){
+            setDisableOfSmallBoardButtons(newHighlightedRow, newHighlightedColumn, false);
+            setDisableOfSmallBoardButtons(highlightedGridX, highlightedGridY, true);
+        }
+    }
+
+
+    public void makeDisable(int x, int y, char c){
+        GridPane gridPane = setDisableOfSmallBoardButtons(x, y, true);
 
         Text text = new Text(String.valueOf(c));
 
@@ -220,31 +191,7 @@ public class App extends Application {
         gridPane.add(text, 1, 1);
     }
 
-    public void enableOrDisableSmallBoard(int x, int y, boolean b) {
-        GridPane gridPane = null;
-        ObservableList<Node> children = grid.getChildren();
 
-        for (Node node : children) {
-            if (GridPane.getRowIndex(node) == x && GridPane.getColumnIndex(node) == y) {
-                gridPane = (GridPane) node;
-                break;
-            }
-        }
-
-        ObservableList<Node> children2;
-        if (gridPane != null){
-            children2 = gridPane.getChildren();
-
-            for (Node node: children2){
-                if(b){
-                    node.setDisable(false);
-                }
-                else {
-                    node.setDisable(true);
-                }
-            }
-        }
-    }
 
 
     private void createMainScene(){
@@ -286,7 +233,7 @@ public class App extends Application {
                                     for (int i = 0; i < 3; i++){
                                         for(int j = 0; j < 3; j++){
                                             if(isOccupied[3 * i + j] && !(i == newHighlightedRow && j == newHighlightedColumn)){
-                                                enableOrDisableSmallBoard(i,j,false);
+                                                setDisableOfSmallBoardButtons(i,j,true);
                                             }
                                             isOccupied[3 * i + j] = false;
                                         }
@@ -301,7 +248,7 @@ public class App extends Application {
                                         for (int i = 0; i < 3; i++){
                                             for (int j = 0; j < 3; j++){
                                                 if(!(game.isAllOccupiedInSmallBoard(i, j) || game.isWon(i, j))){
-                                                    enableOrDisableSmallBoard(i, j, true);
+                                                    setDisableOfSmallBoardButtons(i, j, false);
                                                     isOccupied[3 * i + j] = true;
                                                 }
                                             }
